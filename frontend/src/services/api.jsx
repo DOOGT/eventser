@@ -39,4 +39,9 @@ export const api = {
   getEvents: (params = {}) => {
     return apiClient.get('api/events', { params });
   },
+
+  createEvent: (data) => {
+    return apiClient.post('api/events', data);
+  },
 };
+

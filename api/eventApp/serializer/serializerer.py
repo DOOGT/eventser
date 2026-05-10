@@ -8,7 +8,7 @@ class EventSerializer(serializers.ModelSerializer):
         model = Evenement
         fields = [
             'id', 'title', 'description', 'date', 'location', 
-            'capacity','created_at',
+            'capacity','createdAt',
         ]
     
     def to_representation(self, instance):
@@ -21,5 +21,5 @@ class EventSerializer(serializers.ModelSerializer):
             'date': data['date'],
             'location': data['location'],
             'capacity': data['capacity'],
-            'createdAt': data['created_at']
+            'createdAt': data['createdAt']
         }
