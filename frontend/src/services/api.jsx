@@ -1,8 +1,42 @@
 import axios from "axios";
 
 
-const api = axios.create({
+const apiClient = axios.create({
     baseURL: 'http://localhost:8000/',
+    headers: {
+    'Content-Type': 'application/json',
+  },
 
-})
-export default api;
+});
+
+apiClient.interceptors.response.use(
+  (response) => {
+    // Pour les réponses 204 No Content, retourner null
+    if (response.status === 204) return null;
+    return response.data;
+  },
+  (error) => {
+    if (error.response) {
+      // Le serveur a répondu avec un code d'erreur
+      throw error.response.data;
+    } else if (error.request) {
+      // La requête a été faite mais pas de réponse
+      throw { 
+        error: 'NETWORK_ERROR', 
+        message: 'Impossible de se connecter au serveur' 
+      };
+    } else {
+      // Erreur lors de la configuration de la requête
+      throw { 
+        error: 'REQUEST_ERROR', 
+        message: error.message 
+      };
+    }
+  }
+);
+export const api = {
+  // Events
+  getEvents: (params = {}) => {
+    return apiClient.get('api/events', { params });
+  },
+};
