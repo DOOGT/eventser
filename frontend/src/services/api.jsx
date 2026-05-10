@@ -43,5 +43,21 @@ export const api = {
   createEvent: (data) => {
     return apiClient.post('api/events', data);
   },
+
+  getEvent: (id) => {
+    return apiClient.get(`api/events/${id}`);
+  },
+
+  updateEvent: (id, data) => {
+    return apiClient.put(`api/events/${id}`, data);
+  },
+
+  deleteEvent: (id) => {
+    return apiClient.delete(`api/events/${id}`);
+  },
+  registerForEvent: (eventId, data) => apiClient.post(`api/events/${eventId}/register/`, data),
+  getEventRegistrations: (eventId) => apiClient.get(`api/events/${eventId}/registrations/`),
+  cancelRegistration: (registrationId) => apiClient.delete(`api/registrations/${registrationId}/`),
+
 };
 

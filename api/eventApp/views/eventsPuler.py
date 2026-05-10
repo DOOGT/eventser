@@ -65,5 +65,58 @@ class EvenPuller(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+class EventDetailView(APIView):
+    """Détail, modification et suppression d'un événement"""
+    permission_classes = [AllowAny]
+
+    def get_object(self, id):
+        """Récupère un événement par son ID ou retourne None"""
+        try:
+            return Evenement.objects.get(id=id)
+        except Evenement.DoesNotExist:
+            return None
+
+    def get(self, request, id):
+        """Affiche le détail d'un événement"""
+        event = self.get_object(id)
+        if not event:
+            return Response(
+                {'error': 'NOT_FOUND', 'message': 'Événement non trouvé'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = EventSerializer(event)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, id):
+        """Met à jour un événement (modification complète ou partielle)"""
+        event = self.get_object(id)
+        if not event:
+            return Response(
+                {'error': 'NOT_FOUND', 'message': 'Événement non trouvé'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        # partial=True permet la modification partielle
+        serializer = EventSerializer(event, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, id):
+        """Supprime un événement et toutes ses inscriptions"""
+        event = self.get_object(id)
+        if not event:
+            return Response(
+                {'error': 'NOT_FOUND', 'message': 'Événement non trouvé'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        event.delete()  # Les inscriptions seront supprimées en cascade
+        return Response(
+            {'message': 'Événement supprimé avec succès'},
+            status=status.HTTP_204_NO_CONTENT
+        )
 
 
